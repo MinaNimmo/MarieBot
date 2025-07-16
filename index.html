@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chat with Marie Antoinette</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+      font-family: 'Segoe UI', sans-serif;
+      color: #4a148c;
+      margin: 0; padding: 0; height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    header {
+      background: #ab47bc;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+    }
+    #chat {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    #inputContainer {
+      display: flex;
+      padding: 1rem;
+      border-top: 1px solid #ccc;
+    }
+    #userInput {
+      flex: 1;
+      padding: 0.6rem;
+      border-radius: 20px;
+      border: 2px solid #ba68c8;
+      outline: none;
+      font-size: 1rem;
+    }
+    #sendBtn {
+      background: #8e24aa;
+      color: white;
+      border: none;
+      margin-left: 1rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>Chat with Marie Antoinette</header>
+  <div id="chat"></div>
+  <div id="inputContainer">
+    <input type="text" id="userInput" placeholder="Speak to the Queen..." />
+    <button id="sendBtn">Send</button>
+  </div>
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    function addMessage(sender, text) {
+      chat.textContent += `${sender}: ${text}\n`;
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function sendPrompt() {
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+      addMessage("You", text);
+      const prompt = `You are Marie Antoinette. Flirtatious, witty, a bit dramatic. Reply to: "${text}"`;
+      try {
+        const res = await fetch("https://a-n-t-o-i-n-e-t-t-e.onrender.com/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        addMessage("Marie", data.response);
+      } catch (err) {
+        addMessage("Marie", "I am unable to speak right now. 😢");
+        console.error(err);
+      }
+    }
+
+    sendBtn.addEventListener("click", sendPrompt);
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") sendPrompt();
+    });
+  </script>
+</body>
+</html>
